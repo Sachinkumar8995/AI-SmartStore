@@ -89,7 +89,21 @@ function Sidebar({ isOpen, onClose }) {
               <HiOutlineUser />
             </div>
             <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: '600' }}>{user?.name || 'Admin'}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>{user?.name || 'Admin'}</span>
+                <span style={{
+                  fontSize: '0.58rem',
+                  fontWeight: '800',
+                  padding: '1px 5px',
+                  borderRadius: '10px',
+                  textTransform: 'uppercase',
+                  background: user?.role === 'admin' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                  color: user?.role === 'admin' ? '#a5b4fc' : '#93c5fd',
+                  border: user?.role === 'admin' ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)',
+                  boxShadow: user?.role === 'admin' ? '0 0 10px rgba(99, 102, 241, 0.2)' : '0 0 10px rgba(59, 130, 246, 0.2)',
+                  letterSpacing: '0.05em'
+                }}>{user?.role || 'admin'}</span>
+              </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user?.storeName || 'Store'}</div>
             </div>
           </div>

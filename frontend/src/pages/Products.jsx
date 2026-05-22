@@ -62,7 +62,14 @@ function Products() {
       toast.success('AI assets composed and updated successfully!');
       loadProducts();
     } catch (err) {
-      toast.error(err.response?.data?.error || 'AI generation failed');
+      const errorMsg = err.response?.data?.error || '';
+      if (errorMsg.includes('API key expired') || errorMsg.includes('INVALID_ARGUMENT') || errorMsg.includes('expired')) {
+        toast.error('Gemini API key is expired! Renew it in backend/.env or comment it out to run in Mock Mode.', { id: 'gemini-err', duration: 8000 });
+      } else if (errorMsg.includes('quota') || errorMsg.includes('RESOURCE_EXHAUSTED') || errorMsg.includes('429')) {
+        toast.error('Gemini free tier quota exceeded! Wait 60s or comment key out to run in Mock Mode.', { id: 'gemini-err', duration: 8000 });
+      } else {
+        toast.error(errorMsg || 'AI generation failed');
+      }
     } finally {
       setAiGenerating(false);
     }
