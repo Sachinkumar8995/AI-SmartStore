@@ -8,7 +8,7 @@ export const getLowStockAlerts = async (req, res, next) => {
     const { threshold = 10 } = req.query;
 
     const lowStockProducts = await Product.find({
-      user: req.user.id,
+      user: req.user.storeOwnerId,
       stock: { $lte: parseInt(threshold) },
       status: 'active'
     })
@@ -33,7 +33,7 @@ export const getLowStockAlerts = async (req, res, next) => {
 export const getInventorySummary = async (req, res, next) => {
   try {
     const products = await Product.find({ 
-      user: req.user.id, 
+      user: req.user.storeOwnerId, 
       status: 'active' 
     }).lean();
 

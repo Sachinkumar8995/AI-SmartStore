@@ -14,7 +14,7 @@ import {
 export const aiGenerateDescription = async (req, res, next) => {
   try {
     const { productId } = req.body;
-    const product = await Product.findOne({ _id: productId, user: req.user.id });
+    const product = await Product.findOne({ _id: productId, user: req.user.storeOwnerId });
 
     if (!product) {
       return res.status(404).json({ success: false, error: 'Product not found' });
@@ -38,7 +38,7 @@ export const aiGenerateDescription = async (req, res, next) => {
 export const aiGenerateTags = async (req, res, next) => {
   try {
     const { productId } = req.body;
-    const product = await Product.findOne({ _id: productId, user: req.user.id });
+    const product = await Product.findOne({ _id: productId, user: req.user.storeOwnerId });
 
     if (!product) {
       return res.status(404).json({ success: false, error: 'Product not found' });
@@ -61,7 +61,7 @@ export const aiGenerateTags = async (req, res, next) => {
 export const aiGenerateCaption = async (req, res, next) => {
   try {
     const { productId } = req.body;
-    const product = await Product.findOne({ _id: productId, user: req.user.id });
+    const product = await Product.findOne({ _id: productId, user: req.user.storeOwnerId });
 
     if (!product) {
       return res.status(404).json({ success: false, error: 'Product not found' });
@@ -84,7 +84,7 @@ export const aiGenerateCaption = async (req, res, next) => {
 export const aiGenerateAll = async (req, res, next) => {
   try {
     const { productId } = req.body;
-    const product = await Product.findOne({ _id: productId, user: req.user.id });
+    const product = await Product.findOne({ _id: productId, user: req.user.storeOwnerId });
 
     if (!product) {
       return res.status(404).json({ success: false, error: 'Product not found' });
@@ -115,10 +115,10 @@ export const aiGenerateAll = async (req, res, next) => {
 // @access  Private
 export const aiGetSuggestions = async (req, res, next) => {
   try {
-    const products = await Product.find({ user: req.user.id }).lean();
+    const products = await Product.find({ user: req.user.storeOwnerId }).lean();
     const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
     const salesData = await Sale.find({
-      user: req.user.id,
+      user: req.user.storeOwnerId,
       date: { $gte: ninetyDaysAgo }
     }).lean();
 
@@ -137,7 +137,7 @@ export const aiGetPricing = async (req, res, next) => {
   try {
     const product = await Product.findOne({
       _id: req.params.productId,
-      user: req.user.id
+      user: req.user.storeOwnerId
     });
 
     if (!product) {

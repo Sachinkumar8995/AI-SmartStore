@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // @access  Private
 export const getSalesOverview = async (req, res, next) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const userId = new mongoose.Types.ObjectId(req.user.storeOwnerId);
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekStart = new Date(todayStart);
@@ -31,8 +31,8 @@ export const getSalesOverview = async (req, res, next) => {
         { $match: { user: userId, date: { $gte: monthStart } } },
         { $group: { _id: null, revenue: { $sum: '$totalAmount' }, orders: { $sum: 1 } } }
       ]),
-      Product.countDocuments({ user: req.user.id }),
-      Sale.countDocuments({ user: req.user.id })
+      Product.countDocuments({ user: req.user.storeOwnerId }),
+      Sale.countDocuments({ user: req.user.storeOwnerId })
     ]);
 
     // Calculate average order value
@@ -65,7 +65,7 @@ export const getSalesOverview = async (req, res, next) => {
 // @access  Private
 export const getRevenueChart = async (req, res, next) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const userId = new mongoose.Types.ObjectId(req.user.storeOwnerId);
     const { period = '30' } = req.query;
     const daysAgo = new Date();
     daysAgo.setDate(daysAgo.getDate() - parseInt(period));
@@ -122,7 +122,7 @@ export const getRevenueChart = async (req, res, next) => {
 // @access  Private
 export const getTopProducts = async (req, res, next) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const userId = new mongoose.Types.ObjectId(req.user.storeOwnerId);
     const { limit = 10 } = req.query;
 
     const topProducts = await Sale.aggregate([
@@ -171,7 +171,7 @@ export const getTopProducts = async (req, res, next) => {
 // @access  Private
 export const getSalesByCategory = async (req, res, next) => {
   try {
-    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const userId = new mongoose.Types.ObjectId(req.user.storeOwnerId);
 
     const categoryData = await Sale.aggregate([
       { $match: { user: userId } },
@@ -208,7 +208,7 @@ export const getRecentSales = async (req, res, next) => {
   try {
     const { limit = 10 } = req.query;
 
-    const sales = await Sale.find({ user: req.user.id })
+    const sales = await Sale.find({ user: req.user.storeOwnerId })
       .sort('-date')
       .limit(parseInt(limit))
       .populate('product', 'name category price imageUrl')
@@ -241,7 +241,7 @@ export const createOrder = async (req, res, next) => {
         return res.status(400).json({ success: false, error: 'Invalid product ID or quantity' });
       }
 
-      const product = await Product.findOne({ _id: productId, user: req.user.id });
+      const product = await Product.findOne({ _id: productId, user: req.user.storeOwnerId });
       if (!product) {
         return res.status(404).json({ success: false, error: `Product not found: ${productId}` });
       }
@@ -262,7 +262,7 @@ export const createOrder = async (req, res, next) => {
 
       // Prepare Sale record
       salesToInsert.push({
-        user: req.user.id,
+        user: req.user.storeOwnerId,
         product: product._id,
         quantity,
         totalAmount,

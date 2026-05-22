@@ -93,16 +93,27 @@ async function seed() {
     ]);
     console.log('🗑️  Cleared existing data');
 
-    // Create demo user
+    // Create demo admin user
     const user = await User.create({
       name: 'Admin User',
       email: 'admin@smartstore.com',
       password: 'password123',
+      role: 'admin',
       storeName: 'SmartStore Demo'
     });
-    console.log(`👤 Created demo user: admin@smartstore.com / password123`);
+    console.log(`👤 Created demo admin user: admin@smartstore.com / password123`);
 
-    // Create products
+    // Create demo staff user
+    const staffUser = await User.create({
+      name: 'Staff User',
+      email: 'staff@smartstore.com',
+      password: 'password123',
+      role: 'staff',
+      storeName: 'SmartStore Demo'
+    });
+    console.log(`👤 Created demo staff user: staff@smartstore.com / password123`);
+
+    // Create products (owned by the admin user, so both admin & staff can query them since they share storeName)
     const productDocs = await Product.insertMany(
       products.map(p => ({ ...p, user: user._id }))
     );
@@ -116,8 +127,12 @@ async function seed() {
     console.log('\n🎉 Database seeded successfully!');
     console.log('─────────────────────────────────');
     console.log('Login credentials:');
-    console.log('  Email:    admin@smartstore.com');
-    console.log('  Password: password123');
+    console.log('  [ADMIN USER]');
+    console.log('    Email:    admin@smartstore.com');
+    console.log('    Password: password123');
+    console.log('  [STAFF USER]');
+    console.log('    Email:    staff@smartstore.com');
+    console.log('    Password: password123');
     console.log('─────────────────────────────────\n');
 
     process.exit(0);

@@ -7,7 +7,7 @@ export const getProducts = async (req, res, next) => {
   try {
     const { page = 1, limit = 20, search, category, status, sort = '-createdAt' } = req.query;
 
-    const query = { user: req.user.id };
+    const query = { user: req.user.storeOwnerId };
 
     if (search) {
       query.$or = [
@@ -52,7 +52,7 @@ export const getProduct = async (req, res, next) => {
   try {
     const product = await Product.findOne({ 
       _id: req.params.id, 
-      user: req.user.id 
+      user: req.user.storeOwnerId 
     });
 
     if (!product) {
@@ -70,7 +70,7 @@ export const getProduct = async (req, res, next) => {
 // @access  Private
 export const createProduct = async (req, res, next) => {
   try {
-    req.body.user = req.user.id;
+    req.body.user = req.user.storeOwnerId;
     const product = await Product.create(req.body);
     res.status(201).json({ success: true, data: product });
   } catch (error) {
@@ -85,7 +85,7 @@ export const updateProduct = async (req, res, next) => {
   try {
     let product = await Product.findOne({ 
       _id: req.params.id, 
-      user: req.user.id 
+      user: req.user.storeOwnerId 
     });
 
     if (!product) {
@@ -110,7 +110,7 @@ export const deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findOne({ 
       _id: req.params.id, 
-      user: req.user.id 
+      user: req.user.storeOwnerId 
     });
 
     if (!product) {
@@ -129,7 +129,7 @@ export const deleteProduct = async (req, res, next) => {
 // @access  Private
 export const getCategories = async (req, res, next) => {
   try {
-    const categories = await Product.distinct('category', { user: req.user.id });
+    const categories = await Product.distinct('category', { user: req.user.storeOwnerId });
     res.json({ success: true, data: categories });
   } catch (error) {
     next(error);

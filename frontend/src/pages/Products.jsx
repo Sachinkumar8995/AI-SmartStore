@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { HiOutlineSearch, HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSparkles, HiOutlineEye, HiOutlineSave } from 'react-icons/hi';
 
 function Products() {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -277,9 +279,11 @@ function Products() {
                         <button className="btn btn-ghost btn-icon" title="Edit" onClick={() => openEditForm(product)}>
                           <HiOutlinePencil />
                         </button>
-                        <button className="btn btn-ghost btn-icon" title="Delete" style={{ color: 'var(--accent-red)' }} onClick={() => deleteProduct(product._id)}>
-                          <HiOutlineTrash />
-                        </button>
+                        {user?.role === 'admin' && (
+                          <button className="btn btn-ghost btn-icon" title="Delete" style={{ color: 'var(--accent-red)' }} onClick={() => deleteProduct(product._id)}>
+                            <HiOutlineTrash />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
